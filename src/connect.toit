@@ -12,6 +12,10 @@ import .client
 QUBITRO_HOST ::= "broker.qubitro.com"
 QUBITRO_PORT ::= 8883
 
+/**
+Connects to the Qubitro MQTT broker. If no $network is provided, the default
+  system network is used.
+*/
 connect --id/string --token/string --network/net.Interface?=null -> Client:
   if not network: network = net.open
   socket := network.tcp_connect QUBITRO_HOST QUBITRO_PORT
