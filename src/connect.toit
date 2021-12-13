@@ -6,13 +6,13 @@ import mqtt
 import net
 import tls
 import certificate_roots
-import encoding.json
-import net.x509
+
+import .client
 
 QUBITRO_HOST ::= "broker.qubitro.com"
 QUBITRO_PORT ::= 8883
 
-connect --id/string --token/string --network/net.Interface? -> int:
+connect --id/string --token/string --network/net.Interface?=null -> Client:
   if not network: network = net.open
   socket := network.tcp_connect QUBITRO_HOST QUBITRO_PORT
 
@@ -20,9 +20,10 @@ connect --id/string --token/string --network/net.Interface? -> int:
       --root_certificates=[certificate_roots.BALTIMORE_CYBERTRUST_ROOT]
   tls_socket.handshake
 
-  client := mqtt.Client
+  mqtt_client := mqtt.Client
     id
     mqtt.TcpTransport tls_socket
     --username=id
     --password=token
-  return 42
+
+  return Client id mqtt_client

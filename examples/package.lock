@@ -3,3 +3,14 @@ prefixes:
 packages:
   ..:
     path: ..
+    prefixes:
+      certificate_roots: toit-cert-roots
+      mqtt: mqtt
+  mqtt:
+    url: github.com/toitware/mqtt
+    version: 1.1.2
+    hash: 7ff2620c895960b2c31990dd06107729bb03b94b
+  toit-cert-roots:
+    url: github.com/toitware/toit-cert-roots
+    version: 1.0.0
+    hash: bc4e7a2382dc5accb9c6c59673a4292e2f3a5698

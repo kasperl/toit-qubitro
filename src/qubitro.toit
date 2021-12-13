@@ -3,5 +3,6 @@
 // found in the LICENSE file.
 
 import .connect
+import .client
 
 export *
