@@ -1,3 +1,4 @@
+name: qubitro
 dependencies:
   certificate_roots:
     url: github.com/toitware/toit-cert-roots
