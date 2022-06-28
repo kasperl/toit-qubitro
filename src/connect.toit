@@ -18,16 +18,16 @@ Connects to the Qubitro MQTT broker. If no $network is provided, the default
 */
 connect --id/string --token/string --network/net.Interface?=null -> Client:
   if not network: network = net.open
-  socket := network.tcp_connect QUBITRO_HOST QUBITRO_PORT
 
-  tls_socket := tls.Socket.client socket
+  transport := mqtt.TcpTransport.tls network --host=QUBITRO_HOST --port=QUBITRO_PORT
       --root_certificates=[certificate_roots.BALTIMORE_CYBERTRUST_ROOT]
-  tls_socket.handshake
 
-  mqtt_client := mqtt.Client
-    id
-    mqtt.TcpTransport tls_socket
-    --username=id
-    --password=token
+  options := mqtt.SessionOptions
+      --client_id=id
+      --username=id
+      --password=token
+
+  mqtt_client := mqtt.Client --transport=transport
+  mqtt_client.start --options=options
 
   return Client id mqtt_client
