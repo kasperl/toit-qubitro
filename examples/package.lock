@@ -8,8 +8,8 @@ packages:
       mqtt: mqtt
   mqtt:
     url: github.com/toitware/mqtt
-    version: 2.0.1
-    hash: b96f1ca3ced9cf30934acc2c7911f1ea92d3bb71
+    version: 2.0.2
+    hash: b5440a523baa8d696ad3899c34241e30d4ed1a6a
   toit-cert-roots:
     url: github.com/toitware/toit-cert-roots
     version: 1.3.2
