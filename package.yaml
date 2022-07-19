@@ -5,4 +5,4 @@ dependencies:
     version: ^1.3.2
   mqtt:
     url: github.com/toitware/mqtt
-    version: ^2.0.2
+    version: ^2.0.3
