@@ -8,26 +8,14 @@ import tls
 import certificate_roots
 
 import .client
-
-QUBITRO_HOST ::= "broker.qubitro.com"
-QUBITRO_PORT ::= 8883
+import .service show CONFIG_DEVICE_ID CONFIG_DEVICE_TOKEN
 
 /**
-Connects to the Qubitro MQTT broker. If no $network is provided, the default
-  system network is used.
+Connects to Qubitro.
 */
-connect --id/string --token/string --network/net.Interface?=null -> Client:
-  if not network: network = net.open
-
-  transport := mqtt.TcpTransport.tls network --host=QUBITRO_HOST --port=QUBITRO_PORT
-      --root_certificates=[certificate_roots.BALTIMORE_CYBERTRUST_ROOT]
-
-  options := mqtt.SessionOptions
-      --client_id=id
-      --username=id
-      --password=token
-
-  mqtt_client := mqtt.Client --transport=transport
-  mqtt_client.start --options=options
-
-  return Client id mqtt_client
+connect --id/string?=null --token/string?=null -> Client:
+  config := {:}
+  if id: config[CONFIG_DEVICE_ID] = id
+  if token: config[CONFIG_DEVICE_TOKEN] = token
+  handle ::= _client_.connect config
+  return Client handle

@@ -4,9 +4,12 @@
 
 import qubitro
 
+// $ jag container install qubitro src/service.toit \
+//     -D qubitro.device.id=<PASTE_DEVICE_ID> \
+//     -D qubitro.device.token=<PASTE_DEVICE_TOKEN>
+
+// $ jag run examples/publish.toit
+
 main:
   client ::= qubitro.connect
-      --id="<PASTE_DEVICE_ID>"
-      --token="<PASTE_DEVICE_TOKEN>"
   client.publish { "MyData": random 1000 }
-  print "Published data to Qubitro!"
