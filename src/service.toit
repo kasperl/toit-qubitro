@@ -49,7 +49,8 @@ class QubitroServiceDefinition extends ServiceDefinition:
   connect config/Map client/int -> ServiceResource:
     device_id ::= config.get CONFIG_DEVICE_ID or arguments_.get CONFIG_DEVICE_ID
     device_token := config.get CONFIG_DEVICE_TOKEN or arguments_.get CONFIG_DEVICE_TOKEN
-    // TODO(kasper): Check that we have device id and device token.
+    if not device_id: throw "ILLEGAL_ARGUMENT: No device id provided"
+    if not device_token: throw "ILLEGAL_ARGUMENT: No device token provided"
     module := state_.up: QubitroMqttModule logger_ device_id device_token
     if module.device_id != device_id:
       unreachable
@@ -108,11 +109,20 @@ class QubitroMqttModule implements NetworkModule:
       connected.set client
       client.handle: | packet/mqtt.Packet |
         logger_.warn "packet received (ignored)" --tags={"type": packet.type}
-    finally:
+    finally: | is_exception exception |
       if client: client.close
       else if transport: transport.close
-      logger_.info "disconnected" --tags={"host": HOST, "port": PORT, "device": device_id}
       network.close
+      // We need to call monitor operations to send exceptions
+      // to the task that initiated the connection attempt, so
+      // we have to do this in a critical section if we're being
+      // canceled as part of a disconnect.
+      critical_do:
+        if connected.has_value:
+          logger_.info "disconnected" --tags={"host": HOST, "port": PORT, "device": device_id}
+        if is_exception:
+          connected.set --exception exception
+          return
 
   publish data/Map -> none:
     payload ::= json.encode data
