@@ -1,4 +1,4 @@
-// Copyright (C) 2022 Kasper Lund.
+// Copyright (C) 2021 Kasper Lund.
 // Use of this source code is governed by a Zero-Clause BSD license that can
 // be found in the EXAMPLES_LICENSE file.
 

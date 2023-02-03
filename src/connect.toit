@@ -14,8 +14,10 @@ import .service show CONFIG_DEVICE_ID CONFIG_DEVICE_TOKEN
 Connects to Qubitro.
 */
 connect --id/string?=null --token/string?=null -> Client:
+  client := _client_
+  if not client: throw "Cannot find Qubitro service"
   config := {:}
   if id: config[CONFIG_DEVICE_ID] = id
   if token: config[CONFIG_DEVICE_TOKEN] = token
-  handle ::= _client_.connect config
+  handle ::= client.connect config
   return Client handle
