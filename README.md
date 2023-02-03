@@ -1,8 +1,10 @@
-# qubitro
+# Qubitro connector for the ESP32
 
-Connect your devices to Qubitro and visualize your data in the Qubitro Portal.
+Connect your devices to [Qubitro](https://www.qubitro.com/) and visualize your data in the
+[Qubitro Portal](https://portal.qubitro.com/).
 
-This packages provides an easy and convenient way to connect to Qubitro via MQTT. It
+This [Toit](https://toitlang.org) package provides an easy and convenient way to
+connect to Qubitro via MQTT from devices running on the ESP32-family of chips.
 
 ## Architecture
 
