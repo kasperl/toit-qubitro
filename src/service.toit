@@ -2,18 +2,21 @@
 // Use of this source code is governed by an MIT-style license that can be
 // found in the LICENSE file.
 
-import certificate_roots
-import encoding.json
 import log
 import monitor
 import net
 
+import encoding.json
+import encoding.tison
+
+import certificate_roots
 import mqtt
 import mqtt.packets as mqtt
 
 import .internal.api show QubitroService
 
-import system.services show ServiceDefinition ServiceResource
+import system.assets
+import system.services show ServiceHandler ServiceProvider ServiceResource
 import system.base.network show NetworkModule NetworkState NetworkResource
 
 HOST ::= "broker.qubitro.com"
@@ -22,21 +25,24 @@ PORT ::= 8883
 CONFIG_DEVICE_ID    ::= "qubitro.device.id"
 CONFIG_DEVICE_TOKEN ::= "qubitro.device.token"
 
-main arguments:
+main:
   logger ::= log.Logger log.DEBUG_LEVEL log.DefaultTarget --name="qubitro"
   logger.info "service starting"
-  service := QubitroServiceDefinition logger (arguments is Map ? arguments : {:})
+  defines := assets.decode.get "jag.defines"
+      --if_present=: tison.decode it
+      --if_absent=: {:}
+  service := QubitroServiceProvider logger defines
   service.install
   logger.info "service running"
 
-class QubitroServiceDefinition extends ServiceDefinition:
+class QubitroServiceProvider extends ServiceProvider implements ServiceHandler:
   logger_/log.Logger
-  arguments_/Map
+  defines_/Map
   state_ ::= NetworkState
 
-  constructor .logger_ .arguments_:
+  constructor .logger_ .defines_:
     super "qubitro" --major=1 --minor=0
-    provides QubitroService.UUID QubitroService.MAJOR QubitroService.MINOR
+    provides QubitroService.SELECTOR --handler=this
 
   handle pid/int client/int index/int arguments/any -> any:
     if index == QubitroService.CONNECT_INDEX:
@@ -47,8 +53,8 @@ class QubitroServiceDefinition extends ServiceDefinition:
     unreachable
 
   connect config/Map client/int -> ServiceResource:
-    device_id ::= config.get CONFIG_DEVICE_ID or arguments_.get CONFIG_DEVICE_ID
-    device_token := config.get CONFIG_DEVICE_TOKEN or arguments_.get CONFIG_DEVICE_TOKEN
+    device_id ::= config.get CONFIG_DEVICE_ID or defines_.get CONFIG_DEVICE_ID
+    device_token := config.get CONFIG_DEVICE_TOKEN or defines_.get CONFIG_DEVICE_TOKEN
     if not device_id: throw "ILLEGAL_ARGUMENT: No device id provided"
     if not device_token: throw "ILLEGAL_ARGUMENT: No device token provided"
     module := state_.up: QubitroMqttModule logger_ device_id device_token
@@ -131,6 +137,6 @@ class QubitroMqttModule implements NetworkModule:
 
 class QubitroClient extends NetworkResource:
   module/QubitroMqttModule
-  constructor service/QubitroServiceDefinition client/int state/NetworkState:
+  constructor provider/QubitroServiceProvider client/int state/NetworkState:
     module = state.module as QubitroMqttModule
-    super service client state
+    super provider client state
