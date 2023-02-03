@@ -2,7 +2,7 @@ name: qubitro
 dependencies:
   certificate_roots:
     url: github.com/toitware/toit-cert-roots
-    version: ^1.3.2
+    version: ^1.4.0
   mqtt:
     url: github.com/toitware/mqtt
-    version: ^2.0.2
+    version: ^2.1.1

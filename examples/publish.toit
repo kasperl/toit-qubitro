@@ -6,7 +6,4 @@ import qubitro
 
 main:
   client ::= qubitro.connect
-      --id="<PASTE_DEVICE_ID>"
-      --token="<PASTE_DEVICE_TOKEN>"
   client.publish { "MyData": random 1000 }
-  print "Published data to Qubitro!"
