@@ -13,7 +13,8 @@ system through [Toit containers](https://github.com/toitlang/toit/discussions/86
 
 To install the Qubitro connector service on your device, we recommend that you
 use [Jaguar](https://github.com/toitlang/jaguar). Jaguar makes it easy to experiment
-with the Qubitro services because it allows you to
+with the Qubitro services because it allows you to upload new services and
+applications via WiFi without having to restart your device.
 
 The Qubitro credentials easily be provided to the service at install time, so you
 don't have to write it into your source code:
