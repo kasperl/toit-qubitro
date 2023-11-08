@@ -16,7 +16,7 @@ import mqtt.packets as mqtt
 import .internal.api show QubitroService
 
 import system.assets
-import system.services show ServiceHandlerNew ServiceProvider ServiceResource
+import system.services show ServiceHandler ServiceProvider ServiceResource
 import system.base.network show NetworkModule NetworkState NetworkResource
 
 HOST ::= "broker.qubitro.com"
@@ -35,14 +35,14 @@ main:
   service.install
   logger.info "service running"
 
-class QubitroServiceProvider extends ServiceProvider implements ServiceHandlerNew:
+class QubitroServiceProvider extends ServiceProvider implements ServiceHandler:
   logger_/log.Logger
   defines_/Map
   state_ ::= NetworkState
 
   constructor .logger_ .defines_:
     super "qubitro" --major=1 --minor=0
-    provides QubitroService.SELECTOR --handler=this --new
+    provides QubitroService.SELECTOR --handler=this
 
   handle index/int arguments/any --gid/int --client/int -> any:
     if index == QubitroService.CONNECT_INDEX:
