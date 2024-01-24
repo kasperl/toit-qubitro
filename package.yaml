@@ -1,4 +1,5 @@
 name: qubitro
+description: Qubitro connector for the ESP32.
 dependencies:
   certificate_roots:
     url: github.com/toitware/toit-cert-roots

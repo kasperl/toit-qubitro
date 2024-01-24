@@ -1,4 +1,4 @@
-sdk: ^2.0.0-alpha.35
+sdk: ^2.0.0-alpha.80
 prefixes:
   certificate_roots: toit-cert-roots
   mqtt: mqtt
