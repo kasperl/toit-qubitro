@@ -1,6 +1,9 @@
 name: qubitro
 description: Qubitro connector for the ESP32.
 dependencies:
+  artemis:
+    url: github.com/toitware/toit-artemis
+    version: ^0.8.3
   certificate_roots:
     url: github.com/toitware/toit-cert-roots
     version: ^1.6.1

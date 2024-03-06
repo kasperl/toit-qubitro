@@ -9,6 +9,7 @@ import net
 import encoding.json
 import encoding.tison
 
+import artemis
 import certificate-roots
 import mqtt
 import mqtt.packets as mqtt
@@ -28,7 +29,8 @@ CONFIG-DEVICE-TOKEN ::= "qubitro.device.token"
 main:
   logger ::= log.Logger log.DEBUG-LEVEL log.DefaultTarget --name="qubitro"
   logger.info "service starting"
-  defines := assets.decode.get "jag.defines"
+  defines-key := artemis.available ? "artemis.defines" : "jag.defines"
+  defines := assets.decode.get defines-key
       --if-present=: tison.decode it
       --if-absent=: {:}
   service := QubitroServiceProvider logger defines

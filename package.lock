@@ -1,5 +1,6 @@
 sdk: ^2.0.0-alpha.100
 prefixes:
+  artemis: toit-artemis
   certificate_roots: toit-cert-roots
   mqtt: mqtt
 packages:
@@ -8,6 +9,11 @@ packages:
     name: mqtt
     version: 2.7.0
     hash: ae42b7f4949ec65512e845e7bef7e90a33a914d9
+  toit-artemis:
+    url: github.com/toitware/toit-artemis
+    name: artemis
+    version: 0.8.3
+    hash: c65898c512ec79173b523add1c8d13ec203b6e7e
   toit-cert-roots:
     url: github.com/toitware/toit-cert-roots
     name: certificate_roots
