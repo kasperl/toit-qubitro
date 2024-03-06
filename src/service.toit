@@ -97,11 +97,10 @@ class QubitroMqttModule implements NetworkModule:
     done_.get
 
   connect_ connected/monitor.Latch -> none:
-    network := net.open
     transport/mqtt.TcpTransport? := null
     client/mqtt.FullClient? := null
     try:
-      transport = mqtt.TcpTransport.tls network
+      transport = mqtt.TcpTransport.tls
           --host=HOST
           --port=PORT
           --root_certificates=[ certificate_roots.BALTIMORE_CYBERTRUST_ROOT ]
@@ -118,7 +117,6 @@ class QubitroMqttModule implements NetworkModule:
     finally: | is_exception exception |
       if client: client.close
       else if transport: transport.close
-      network.close
       // We need to call monitor operations to send exceptions
       // to the task that initiated the connection attempt, so
       // we have to do this in a critical section if we're being
