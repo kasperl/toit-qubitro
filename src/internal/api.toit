@@ -11,10 +11,10 @@ interface QubitroService:
       --minor=0
 
   connect config/Map -> int
-  static CONNECT_INDEX ::= 0
+  static CONNECT-INDEX ::= 0
 
   publish handle/int data/Map -> none
-  static PUBLISH_INDEX ::= 1
+  static PUBLISH-INDEX ::= 1
 
 class QubitroServiceClient extends services.ServiceClient implements QubitroService:
   static SELECTOR ::= QubitroService.SELECTOR
@@ -23,7 +23,7 @@ class QubitroServiceClient extends services.ServiceClient implements QubitroServ
     super selector
 
   connect config/Map -> int:
-    return invoke_ QubitroService.CONNECT_INDEX config
+    return invoke_ QubitroService.CONNECT-INDEX config
 
   publish handle/int data/Map -> none:
-    invoke_ QubitroService.PUBLISH_INDEX [handle, data]
+    invoke_ QubitroService.PUBLISH-INDEX [handle, data]
