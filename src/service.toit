@@ -9,7 +9,7 @@ import net
 import encoding.json
 import encoding.tison
 
-import certificate_roots
+import certificate-roots
 import mqtt
 import mqtt.packets as mqtt
 
@@ -22,15 +22,15 @@ import system.base.network show NetworkModule NetworkState NetworkResource
 HOST ::= "broker.qubitro.com"
 PORT ::= 8883
 
-CONFIG_DEVICE_ID    ::= "qubitro.device.id"
-CONFIG_DEVICE_TOKEN ::= "qubitro.device.token"
+CONFIG-DEVICE-ID    ::= "qubitro.device.id"
+CONFIG-DEVICE-TOKEN ::= "qubitro.device.token"
 
 main:
-  logger ::= log.Logger log.DEBUG_LEVEL log.DefaultTarget --name="qubitro"
+  logger ::= log.Logger log.DEBUG-LEVEL log.DefaultTarget --name="qubitro"
   logger.info "service starting"
   defines := assets.decode.get "jag.defines"
-      --if_present=: tison.decode it
-      --if_absent=: {:}
+      --if-present=: tison.decode it
+      --if-absent=: {:}
   service := QubitroServiceProvider logger defines
   service.install
   logger.info "service running"
@@ -45,55 +45,53 @@ class QubitroServiceProvider extends ServiceProvider implements ServiceHandler:
     provides QubitroService.SELECTOR --handler=this
 
   handle index/int arguments/any --gid/int --client/int -> any:
-    if index == QubitroService.CONNECT_INDEX:
+    if index == QubitroService.CONNECT-INDEX:
       return connect arguments client
-    if index == QubitroService.PUBLISH_INDEX:
+    if index == QubitroService.PUBLISH-INDEX:
       resource := (resource client arguments[0]) as QubitroClient
       return resource.module.publish arguments[1]
     unreachable
 
   connect config/Map client/int -> ServiceResource:
-    device_id ::= config.get CONFIG_DEVICE_ID or defines_.get CONFIG_DEVICE_ID
-    device_token := config.get CONFIG_DEVICE_TOKEN or defines_.get CONFIG_DEVICE_TOKEN
-    if not device_id: throw "ILLEGAL_ARGUMENT: No device id provided"
-    if not device_token: throw "ILLEGAL_ARGUMENT: No device token provided"
-    module := state_.up: QubitroMqttModule logger_ device_id device_token
-    if module.device_id != device_id:
+    device-id ::= config.get CONFIG-DEVICE-ID or defines_.get CONFIG-DEVICE-ID
+    device-token := config.get CONFIG-DEVICE-TOKEN or defines_.get CONFIG-DEVICE-TOKEN
+    if not device-id: throw "ILLEGAL_ARGUMENT: No device id provided"
+    if not device-token: throw "ILLEGAL_ARGUMENT: No device token provided"
+    module := state_.up: QubitroMqttModule logger_ device-id device-token
+    if module.device-id != device-id:
       unreachable
-    if module.device_token != device_token:
+    if module.device-token != device-token:
       unreachable
     return QubitroClient this client state_
 
 class QubitroMqttModule implements NetworkModule:
   logger_/log.Logger
-  device_id/string
-  device_token/string
+  device-id/string
+  device-token/string
   client_/mqtt.FullClient? := null
-
-  task_/Task? := null
   done_/monitor.Latch? := null
 
-  constructor logger/log.Logger .device_id .device_token:
-    logger_ = logger.with_name "mqtt"
+  constructor logger/log.Logger .device-id .device-token:
+    logger_ = logger.with-name "mqtt"
 
   connect -> none:
     connected := monitor.Latch
     done := monitor.Latch
     done_ = done
-    task_ = task::
+    task::
       try:
         connect_ connected
       finally:
-        client_ = task_ = done_ = null
-        critical_do: done.set true
+        client_ = done_ = null
+        critical-do: done.set true
     // Wait until the MQTT task has connected and is running.
     client_ = connected.get
-    client_.when_running: null
+    client_.when-running: null
 
   disconnect -> none:
-    if not task_: return
-    // Cancel the MQTT task and wait until it has disconnected.
-    task_.cancel
+    if not client_: return
+    // Close the client and wait until it has disconnected.
+    client_.close
     done_.get
 
   connect_ connected/monitor.Latch -> none:
@@ -103,35 +101,37 @@ class QubitroMqttModule implements NetworkModule:
       transport = mqtt.TcpTransport.tls
           --host=HOST
           --port=PORT
-          --root_certificates=[ certificate_roots.BALTIMORE_CYBERTRUST_ROOT ]
-      client = mqtt.FullClient --transport=transport
+          --root-certificates=[ certificate-roots.BALTIMORE-CYBERTRUST-ROOT ]
+      client = mqtt.FullClient
+          --logger=logger_
+          --transport=transport
       options := mqtt.SessionOptions
-          --client_id=device_id
-          --username=device_id
-          --password=device_token
+          --client-id=device-id
+          --username=device-id
+          --password=device-token
       client.connect --options=options
-      logger_.info "connected" --tags={"host": HOST, "port": PORT, "device": device_id}
+      logger_.info "connected" --tags={"host": HOST, "port": PORT, "device": device-id}
       connected.set client
       client.handle: | packet/mqtt.Packet |
         logger_.warn "packet received (ignored)" --tags={"type": packet.type}
-    finally: | is_exception exception |
+    finally: | is-exception exception |
       if client: client.close
       else if transport: transport.close
       // We need to call monitor operations to send exceptions
       // to the task that initiated the connection attempt, so
       // we have to do this in a critical section if we're being
       // canceled as part of a disconnect.
-      critical_do:
-        if connected.has_value:
-          logger_.info "disconnected" --tags={"host": HOST, "port": PORT, "device": device_id}
-        if is_exception:
+      critical-do:
+        if connected.has-value:
+          logger_.info "disconnected" --tags={"host": HOST, "port": PORT, "device": device-id}
+        if is-exception:
           connected.set --exception exception
           return
 
   publish data/Map -> none:
     payload ::= json.encode data
-    client_.publish device_id payload
-    logger_.info "packet published" --tags={"device": device_id, "data": data}
+    client_.publish device-id payload
+    logger_.info "packet published" --tags={"device": device-id, "data": data}
 
 class QubitroClient extends NetworkResource:
   module/QubitroMqttModule

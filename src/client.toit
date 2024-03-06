@@ -6,7 +6,7 @@ import system.services show ServiceResourceProxy
 import .internal.api
 
 _client_/QubitroServiceClient? ::= (QubitroServiceClient).open
-    --if_absent=: null
+    --if-absent=: null
 
 class Client extends ServiceResourceProxy:
   constructor handle/int:
