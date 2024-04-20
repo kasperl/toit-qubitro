@@ -2,11 +2,6 @@
 // Use of this source code is governed by an MIT-style license that can be
 // found in the LICENSE file.
 
-import mqtt
-import net
-import tls
-import certificate-roots
-
 import .client
 import .service show CONFIG-DEVICE-ID CONFIG-DEVICE-TOKEN
 
