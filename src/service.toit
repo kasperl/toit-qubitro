@@ -33,6 +33,8 @@ main:
   defines := assets.decode.get defines-key
       --if-present=: tison.decode it
       --if-absent=: {:}
+
+  certificate-roots.install-common-trusted-roots
   service := QubitroServiceProvider logger defines
   service.install
   logger.info "service running"
@@ -103,7 +105,6 @@ class QubitroMqttModule implements NetworkModule:
       transport = mqtt.TcpTransport.tls
           --host=HOST
           --port=PORT
-          --root-certificates=[ certificate-roots.BALTIMORE-CYBERTRUST-ROOT ]
       client = mqtt.FullClient
           --logger=logger_
           --transport=transport
